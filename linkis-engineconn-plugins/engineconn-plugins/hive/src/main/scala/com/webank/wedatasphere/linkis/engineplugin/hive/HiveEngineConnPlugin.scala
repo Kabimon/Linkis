@@ -43,7 +43,7 @@ class HiveEngineConnPlugin extends EngineConnPlugin {
   override def init(params: util.Map[String, Any]): Unit = {
     val typeMap = new util.HashMap[String,String]()
     typeMap.put("type","hive")
-    typeMap.put("version","1.2.1")
+    typeMap.put("version","2.3.3")
     val typeLabel =new EngineTypeLabel()
     typeLabel.setValue(typeMap)
     this.defaultLabels.add(typeLabel)

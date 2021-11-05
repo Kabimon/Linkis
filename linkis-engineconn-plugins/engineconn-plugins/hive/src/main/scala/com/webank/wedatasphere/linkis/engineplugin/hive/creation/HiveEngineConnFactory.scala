@@ -18,7 +18,6 @@ package com.webank.wedatasphere.linkis.engineplugin.hive.creation
 
 import java.io.{ByteArrayOutputStream, PrintStream}
 import java.security.PrivilegedExceptionAction
-
 import com.webank.wedatasphere.linkis.common.utils.{Logging, Utils}
 import com.webank.wedatasphere.linkis.engineconn.common.creation.EngineCreationContext
 import com.webank.wedatasphere.linkis.engineconn.common.engineconn.EngineConn
@@ -33,6 +32,7 @@ import com.webank.wedatasphere.linkis.hadoop.common.utils.HDFSUtils
 import com.webank.wedatasphere.linkis.manager.label.entity.engine.EngineType.EngineType
 import com.webank.wedatasphere.linkis.manager.label.entity.engine.RunType.RunType
 import com.webank.wedatasphere.linkis.manager.label.entity.engine.{EngineType, RunType}
+import org.apache.commons.lang.StringUtils
 import org.apache.hadoop.hive.conf.HiveConf
 import org.apache.hadoop.hive.ql.Driver
 import org.apache.hadoop.hive.ql.session.SessionState
@@ -64,6 +64,12 @@ class HiveEngineConnFactory extends ComputationSingleExecutorEngineConnFactory w
       if (BDP_QUEUE_NAME.equals(k)) hiveConf.set(HIVE_QUEUE_NAME, v) else hiveConf.set(k, v)
     }
     hiveConf.setVar(HiveConf.ConfVars.HIVE_HADOOP_CLASSPATH, HiveEngineConfiguration.HIVE_LIB_HOME.getValue + "/*")
+
+
+    if(StringUtils.isNotBlank(HiveEngineConfiguration.HIVE_AUX_JARS.getValue)){
+      hiveConf.setVar(HiveConf.ConfVars.HIVEAUXJARS,HiveEngineConfiguration.HIVE_AUX_JARS.getValue)
+    }
+
     if(HiveEngineConfiguration.ENABLE_FETCH_BASE64) {
       hiveConf.setVar(HiveConf.ConfVars.HIVEFETCHOUTPUTSERDE, HiveEngineConfiguration.BASE64_SERDE_CLASS)
       hiveConf.set("enable_fetch_base64","true")
