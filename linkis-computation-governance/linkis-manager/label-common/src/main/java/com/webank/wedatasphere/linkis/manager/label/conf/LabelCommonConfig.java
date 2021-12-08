@@ -15,9 +15,10 @@
  * limitations under the License.
  */
  
-package org.apache.linkis.manager.label.conf;
+package com.webank.wedatasphere.linkis.manager.label.conf;
 
-import org.apache.linkis.common.conf.CommonVars;
+import com.webank.wedatasphere.linkis.common.conf.CommonVars;
+
 
 public class LabelCommonConfig {
 
