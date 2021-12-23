@@ -48,8 +48,7 @@ public class CryptoUtils {
         oos.close();
         bos.close();
         return new String(new Base64().encode(bos.toByteArray()));*/
-        final byte[] textByte = str.getBytes("UTF-8");
-        return encoder.encodeToString(textByte);
+        return str;
     }
 
     /**
@@ -67,7 +66,7 @@ public class CryptoUtils {
         bis.close();
         ois.close();
         return o;*/
-        return new String(decoder.decode(str), "UTF-8");
+        return str;
     }
 
     /**
