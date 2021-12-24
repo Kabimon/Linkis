@@ -63,7 +63,7 @@ abstract class JavaProcessEngineConnLaunchBuilder extends ProcessEngineConnLaunc
     getLogDir(engineConnBuildRequest).trim.split(" ").foreach(commandLine += _)
     commandLine += ("-Djava.io.tmpdir=" + variable(TEMP_DIRS))
     if (EnvConfiguration.ENGINE_CONN_DEBUG_ENABLE.getValue) {
-      commandLine += s"-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=${variable(RANDOM_PORT)}"
+      commandLine += s"-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=${variable(RANDOM_PORT)}"
     }
     commandLine += "-cp"
     commandLine += variable(CLASSPATH)
