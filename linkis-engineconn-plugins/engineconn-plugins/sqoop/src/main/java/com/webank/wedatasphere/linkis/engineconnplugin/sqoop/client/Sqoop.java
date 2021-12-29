@@ -148,7 +148,7 @@ public class Sqoop extends Configured implements Tool {
     options.getConf().setStrings(FACTORY_CLASS_NAMES_KEY,DEFAULT_FACTORY_CLASS_NAMES_ARR);
     try {
       options = tool.parseArguments(args, null, options, false);
-      options.setConnectString("linkis:"+options.getConnectString());
+      //options.setConnectString("linkis:"+options.getConnectString());
       tool.appendArgs(this.childPrgmArgs);
       tool.validateOptions(options);
       if (options.getVerbose()) {
