@@ -64,6 +64,7 @@
         <module>linkis-extensions</module>
 
         <module>assembly-combined-package</module>
+        <module>linkis-public-enhancements/linkis-datasource/metadatamanager/service/postgresql</module>
 
 
     </modules>
