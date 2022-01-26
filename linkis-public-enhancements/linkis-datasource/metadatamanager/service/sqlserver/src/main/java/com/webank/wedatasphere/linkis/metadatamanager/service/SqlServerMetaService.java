@@ -5,7 +5,7 @@ import com.webank.wedatasphere.linkis.metadatamanager.common.service.MetadataCon
 
 import java.util.Map;
 
-public class OracleMetaService extends AbstractMetaService<SqlConnection> {
+public class SqlServerMetaService extends AbstractMetaService<SqlConnection> {
     @Override
     public MetadataConnection<SqlConnection> getConnection(String operator, Map<String, Object> params) throws Exception {
         return null;

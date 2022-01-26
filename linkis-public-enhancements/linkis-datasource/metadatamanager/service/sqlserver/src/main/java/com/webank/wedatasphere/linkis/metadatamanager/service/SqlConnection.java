@@ -15,12 +15,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class SqlConnection implements Closeable {
-
     private static final Logger LOG = LoggerFactory.getLogger(SqlConnection.class);
 
-    private static final CommonVars<String> SQL_DRIVER_CLASS = CommonVars.apply("wds.linkis.server.mdm.service.sql.driver", "com.ibm.db2.jcc.DB2Driver");
+    private static final CommonVars<String> SQL_DRIVER_CLASS =
+//            CommonVars.apply("wds.linkis.server.mdm.service.postgre.driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            CommonVars.apply("wds.linkis.server.mdm.service.postgre.driver", "com.microsoft.jdbc.sqlserver.SQLServerDriver");
 
-    private static final CommonVars<String> SQL_CONNECT_URL = CommonVars.apply("wds.linkis.server.mdm.service.sql.url", "jdbc:db2://%s:%s/%s");
+    private static final CommonVars<String> SQL_CONNECT_URL =
+//            CommonVars.apply("wds.linkis.server.mdm.service.postgre.url", "jdbc:microsoft:sqlserver://%s:%s/%s");
+            CommonVars.apply("wds.linkis.server.mdm.service.postgre.url", "jdbc:sqlserver://%s:%s;DataBaseName=%s");
 
     private Connection conn;
 
@@ -28,13 +31,9 @@ public class SqlConnection implements Closeable {
 
     public SqlConnection(String host, Integer port,
                          String username, String password,
-                         String database,
-                         Map<String, Object> extraParams ) throws ClassNotFoundException, SQLException {
-        if (Strings.isBlank(database)) {
-            database = "SAMPLE";
-        }
+                         Map<String, Object> extraParams) throws ClassNotFoundException, SQLException {
         connectMessage = new ConnectMessage(host, port, username, password, extraParams);
-        conn = getDBConnection(connectMessage, database);
+        conn = getDBConnection(connectMessage, "");
         //Try to create statement
         Statement statement = conn.createStatement();
         statement.close();
@@ -46,7 +45,7 @@ public class SqlConnection implements Closeable {
         ResultSet rs = null;
         try{
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("LIST DATABASE DIRECTORY");
+            rs = stmt.executeQuery("SELECT Name FROM Master..SysDatabases ORDER BY Name");
             while (rs.next()){
                 dataBaseName.add(rs.getString(1));
             }
@@ -56,13 +55,20 @@ public class SqlConnection implements Closeable {
         return dataBaseName;
     }
 
+    /**
+     * XType = 'U'  表示所有用户表
+     * XType = 'S'  表示所有系统表
+     * @param database 数据库名
+     * @return 数据表列表
+     * @throws SQLException 异常
+     */
     public List<String> getAllTables(String database) throws SQLException {
         List<String> tableNames = new ArrayList<>();
         Statement stmt = null;
         ResultSet rs = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SHOW TABLES FROM `" + database + "`");
+            rs = stmt.executeQuery("SELECT Name FROM " + database + "..SysObjects Where XType='U' ORDER BY Name");
             while (rs.next()) {
                 tableNames.add(rs.getString(1));
             }
@@ -74,10 +80,11 @@ public class SqlConnection implements Closeable {
 
     public List<MetaColumnInfo> getColumns(String database, String table) throws SQLException, ClassNotFoundException {
         List<MetaColumnInfo> columns = new ArrayList<>();
-        String columnSql = "SELECT * FROM `" + database +"`.`" + table + "` WHERE 1 = 2";
+//        String columnSql = "SELECT a.name FieldName, b.name [Type], a.isnullable, ISNULL(g.[value], '') AS FieldRemark FROM SysColumns a LEFT JOIN systypes b on a.xtype = b.xusertype INNER JOIN sysobjects d ON a.id = d.id AND d.xtype = 'U' AND d.name IN ('"+table+"') LEFT JOIN syscomments e ON a.cdefault = e.id LEFT JOIN sys.extended_properties g ON a.id = g.major_id AND a.colid = g.minor_id";
+        String columnSql = "SELECT * FROM " + database +".dbo." + table + " WHERE 1 = 2";
         PreparedStatement ps = null;
         ResultSet rs = null;
-        ResultSetMetaData meta = null;
+        ResultSetMetaData meta;
         try {
             List<String> primaryKeys = getPrimaryKeys(getDBConnection(connectMessage, database),  table);
             ps = conn.prepareStatement(columnSql);
@@ -116,7 +123,7 @@ public class SqlConnection implements Closeable {
             while(rs.next()){
                 primaryKeys.add(rs.getString("column_name"));
             }
-            return primaryKeys;
+        return primaryKeys;
         }finally{
             if(null != rs){
                 closeResource(connection, null, rs);
@@ -135,7 +142,7 @@ public class SqlConnection implements Closeable {
             if(null != resultSet && !resultSet.isClosed()) {
                 resultSet.close();
             }
-            if(null != statement && !statement.isClosed()){
+            if(null != statement /*&& !statement.isClosed()*/){
                 statement.close();
             }
             if(null != connection && !connection.isClosed()){
@@ -163,6 +170,7 @@ public class SqlConnection implements Closeable {
                 .collect(Collectors.joining("&"));
         Class.forName(SQL_DRIVER_CLASS.getValue());
         String url = String.format(SQL_CONNECT_URL.getValue(), connectMessage.host, connectMessage.port, database);
+//        String url = String.format(SQL_CONNECT_URL.getValue(), connectMessage.host, database);
         if(!connectMessage.extraParams.isEmpty()) {
             url += "?" + extraParamString;
         }
