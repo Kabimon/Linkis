@@ -19,7 +19,7 @@ public class SqlConnectionTc {
     @Test
     public void test02() throws SQLException, ClassNotFoundException {
         SqlConnection connection = new SqlConnection("192.168.0.71", 1433, "sa", "123456asd@", new HashMap<>());
-        List<String> allTables = connection.getAllTables("");
+        List<String> allTables = connection.getAllTables("ReportServer");
         System.out.println(allTables);
     }
 

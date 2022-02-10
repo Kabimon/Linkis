@@ -2,7 +2,6 @@ package com.webank.wedatasphere.linkis.metadatamanager.service;
 
 import com.webank.wedatasphere.linkis.common.conf.CommonVars;
 import com.webank.wedatasphere.linkis.metadatamanager.common.domain.MetaColumnInfo;
-import org.apache.logging.log4j.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +77,14 @@ public class SqlConnection implements Closeable {
         }
     }
 
+    /**
+     * 这里写死查询的是 database.[dbo].table 的数据
+     * @param database 数据库名
+     * @param table 表名
+     * @return 列信息
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
     public List<MetaColumnInfo> getColumns(String database, String table) throws SQLException, ClassNotFoundException {
         List<MetaColumnInfo> columns = new ArrayList<>();
 //        String columnSql = "SELECT a.name FieldName, b.name [Type], a.isnullable, ISNULL(g.[value], '') AS FieldRemark FROM SysColumns a LEFT JOIN systypes b on a.xtype = b.xusertype INNER JOIN sysobjects d ON a.id = d.id AND d.xtype = 'U' AND d.name IN ('"+table+"') LEFT JOIN syscomments e ON a.cdefault = e.id LEFT JOIN sys.extended_properties g ON a.id = g.major_id AND a.colid = g.minor_id";

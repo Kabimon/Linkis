@@ -33,7 +33,7 @@ public class SqlConnection implements Closeable {
                          Map<String, Object> extraParams) throws ClassNotFoundException, SQLException {
         connectMessage = new ConnectMessage(host, port, username, password, extraParams);
         if (Strings.isBlank(database)) {
-            database = "";
+            database = "ORCL";
         }
         conn = getDBConnection(connectMessage, database);
         //Try to create statement
@@ -42,19 +42,21 @@ public class SqlConnection implements Closeable {
     }
 
     public List<String> getAllDatabases() throws SQLException {
-        java.util.List<java.lang.String> dataBaseName = new ArrayList<>();
-        Statement stmt = null;
-        ResultSet rs = null;
-        try{
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("select * from v$database");
-            while (rs.next()){
-                dataBaseName.add(rs.getString("name"));
-            }
-        } finally {
-            closeResource(null, stmt, rs);
-        }
-        return dataBaseName;
+//        java.util.List<java.lang.String> dataBaseName = new ArrayList<>();
+//        Statement stmt = null;
+//        ResultSet rs = null;
+//        try{
+//            stmt = conn.createStatement();
+////            rs = stmt.executeQuery("select * from v$database");
+//            rs = stmt.executeQuery("select * from v$tablespace");
+//            while (rs.next()){
+//                dataBaseName.add(rs.getString("name"));
+//            }
+//        } finally {
+//            closeResource(null, stmt, rs);
+//        }
+//        return dataBaseName;
+        throw new UnsupportedOperationException("oracle数据库不能像mysql show databases来获取，应该是存在某个地方来获取的");
     }
 
     public List<String> getAllTables(String schemaname) throws SQLException {
@@ -63,10 +65,9 @@ public class SqlConnection implements Closeable {
         ResultSet rs = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT tablename FROM pg_tables where schemaname = '" + schemaname + "'");
-//            rs = stmt.executeQuery("SELECT table_name FROM information_schema.tables");
+            rs = stmt.executeQuery("SELECT table_name FROM sys.dba_tables WHERE owner = '" + schemaname + "'");
             while (rs.next()) {
-                tableNames.add(rs.getString(1));
+                tableNames.add(rs.getString("TABLE_NAME"));
             }
             return tableNames;
         } finally{

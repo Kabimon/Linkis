@@ -41,28 +41,33 @@ public class SqlConnection implements Closeable {
     }
 
     public List<String> getAllDatabases() throws SQLException {
-        java.util.List<java.lang.String> dataBaseName = new ArrayList<>();
-        Statement stmt = null;
-        ResultSet rs = null;
-        try{
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("LIST DATABASE DIRECTORY");
-            while (rs.next()){
-                dataBaseName.add(rs.getString(1));
-            }
-        } finally {
-            closeResource(null, stmt, rs);
-        }
-        return dataBaseName;
+        throw new UnsupportedOperationException("db2 数据库不能像mysql show databases来获取，应该是存在某个地方来获取的");
+//        java.util.List<java.lang.String> dataBaseName = new ArrayList<>();
+//        Statement stmt = null;
+//        ResultSet rs = null;
+//        try{
+//            stmt = conn.createStatement();
+//            rs = stmt.executeQuery("list database directory");
+////            rs = stmt.executeQuery("SELECT * FROM SYSIBMADM.APPLICATIONS WITH UR");
+////            rs = stmt.executeQuery("select * from syscat.tables");
+//            while (rs.next()){
+//                String db_name = rs.getString("DB_NAME");
+//                System.out.println(db_name);
+//                dataBaseName.add(rs.getString(1));
+//            }
+//        } finally {
+//            closeResource(null, stmt, rs);
+//        }
+//        return dataBaseName;
     }
 
-    public List<String> getAllTables(String database) throws SQLException {
+    public List<String> getAllTables(String tabschema) throws SQLException {
         List<String> tableNames = new ArrayList<>();
         Statement stmt = null;
         ResultSet rs = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SHOW TABLES FROM `" + database + "`");
+            rs = stmt.executeQuery("select tabname as table_name from syscat.tables where tabschema = '" + tabschema + "' and type = 'T'  order by tabschema, tabname");
             while (rs.next()) {
                 tableNames.add(rs.getString(1));
             }
@@ -72,14 +77,16 @@ public class SqlConnection implements Closeable {
         }
     }
 
-    public List<MetaColumnInfo> getColumns(String database, String table) throws SQLException, ClassNotFoundException {
+    public List<MetaColumnInfo> getColumns(String schemaname, String table) throws SQLException, ClassNotFoundException {
         List<MetaColumnInfo> columns = new ArrayList<>();
-        String columnSql = "SELECT * FROM `" + database +"`.`" + table + "` WHERE 1 = 2";
+//        String columnSql = "SELECT * FROM syscat.columns WHERE TABSCHEMA = '" + schemaname + "' AND TABNAME = '" + table + "'";
+        String columnSql = "SELECT * FROM " + schemaname +"." + table + " WHERE 1 = 2";
         PreparedStatement ps = null;
         ResultSet rs = null;
         ResultSetMetaData meta = null;
         try {
-            List<String> primaryKeys = getPrimaryKeys(getDBConnection(connectMessage, database),  table);
+//            List<String> primaryKeys = getPrimaryKeys(getDBConnection(connectMessage, schemaname),  table);
+            List<String> primaryKeys = getPrimaryKeys(conn,  table);
             ps = conn.prepareStatement(columnSql);
             rs = ps.executeQuery();
             meta = rs.getMetaData();
@@ -118,9 +125,12 @@ public class SqlConnection implements Closeable {
             }
             return primaryKeys;
         }finally{
-            if(null != rs){
-                closeResource(connection, null, rs);
+            if (null != rs) {
+                rs.close();
             }
+//            if(null != rs){
+//                closeResource(connection, null, rs);
+//            }
         }
     }
 
