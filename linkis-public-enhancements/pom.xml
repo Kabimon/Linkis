@@ -26,6 +26,12 @@
         <module>linkis-datasource/metadatamanager/service/mysql</module>
         <module>linkis-datasource/metadatamanager/service/hive</module>
         <module>linkis-datasource/metadatamanager/service/kafka</module>
+        <module>linkis-datasource/metadatamanager/service/dameng</module>
+        <module>linkis-datasource/metadatamanager/service/db2</module>
+        <module>linkis-datasource/metadatamanager/service/greenplum</module>
+        <module>linkis-datasource/metadatamanager/service/oracle</module>
+        <module>linkis-datasource/metadatamanager/service/postgre</module>
+        <module>linkis-datasource/metadatamanager/service/sqlserver</module>
         <module>linkis-publicservice</module>
     </modules>
 
