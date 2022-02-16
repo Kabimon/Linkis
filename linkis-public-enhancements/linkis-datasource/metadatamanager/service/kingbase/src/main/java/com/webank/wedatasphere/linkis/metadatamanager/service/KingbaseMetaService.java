@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class DamengMetaService extends AbstractMetaService<SqlConnection> {
+public class KingbaseMetaService extends AbstractMetaService<SqlConnection> {
+
     @Override
     public MetadataConnection<SqlConnection> getConnection(String operator, Map<String, Object> params) throws Exception {
         String host = String.valueOf(params.getOrDefault(SqlParamsMapper.PARAM_SQL_HOST.getValue(), ""));

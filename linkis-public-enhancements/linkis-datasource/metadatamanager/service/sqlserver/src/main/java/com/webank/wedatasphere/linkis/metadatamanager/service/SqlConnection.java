@@ -18,11 +18,11 @@ public class SqlConnection implements Closeable {
 
     private static final CommonVars<String> SQL_DRIVER_CLASS =
 //            CommonVars.apply("wds.linkis.server.mdm.service.postgre.driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver");
-            CommonVars.apply("wds.linkis.server.mdm.service.postgre.driver", "com.microsoft.jdbc.sqlserver.SQLServerDriver");
+            CommonVars.apply("wds.linkis.server.mdm.service.sql.driver", "com.microsoft.jdbc.sqlserver.SQLServerDriver");
 
     private static final CommonVars<String> SQL_CONNECT_URL =
 //            CommonVars.apply("wds.linkis.server.mdm.service.postgre.url", "jdbc:microsoft:sqlserver://%s:%s/%s");
-            CommonVars.apply("wds.linkis.server.mdm.service.postgre.url", "jdbc:sqlserver://%s:%s;DataBaseName=%s");
+            CommonVars.apply("wds.linkis.server.mdm.service.sql.url", "jdbc:sqlserver://%s:%s;DataBaseName=%s");
 
     private Connection conn;
 

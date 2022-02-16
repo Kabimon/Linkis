@@ -18,10 +18,10 @@ public class SqlConnection implements Closeable {
     private static final Logger LOG = LoggerFactory.getLogger(SqlConnection.class);
 
     private static final CommonVars<String> SQL_DRIVER_CLASS =
-            CommonVars.apply("wds.linkis.server.mdm.service.dameng.driver", "dm.jdbc.driver.DmDriver");
+            CommonVars.apply("wds.linkis.server.mdm.service.sql.driver", "com.kingbase8.Driver");
 
     private static final CommonVars<String> SQL_CONNECT_URL =
-            CommonVars.apply("wds.linkis.server.mdm.service.dameng.url", "jdbc:dm://%s:%s/%s");
+            CommonVars.apply("wds.linkis.server.mdm.service.sql.url", "jdbc:kingbase8://%s:%s/%s?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8");
 
     private Connection conn;
 
@@ -52,24 +52,8 @@ public class SqlConnection implements Closeable {
 //            closeResource(null, stmt, rs);
 //        }
 //        return dataBaseName;
-        throw new UnsupportedOperationException("dm数据库不能像mysql show databases来获取，应该是存在某个地方来获取的");
+        throw new UnsupportedOperationException("kingbase数据库不能像mysql show databases来获取，应该是存在某个地方来获取的");
     }
-
-//    public List<String> getAllTables(String database) throws SQLException {
-//        List<String> tableNames = new ArrayList<>();
-//        Statement stmt = null;
-//        ResultSet rs = null;
-//        try {
-//            stmt = conn.createStatement();
-//            rs = stmt.executeQuery("SHOW TABLES FROM `" + database + "`");
-//            while (rs.next()) {
-//                tableNames.add(rs.getString(1));
-//            }
-//            return tableNames;
-//        } finally{
-//            closeResource(null, stmt, rs);
-//        }
-//    }
 
     public List<String> getAllTables(String schema) throws SQLException {
         List<String> tableNames = new ArrayList<>();
@@ -77,7 +61,8 @@ public class SqlConnection implements Closeable {
         ResultSet rs = null;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("select TABLE_NAME from dba_tables where owner='" + schema + "'");
+            rs = stmt.executeQuery("SELECT ('\"' || table_schema || '\".\"' || table_name || '\"') AS table_name " +
+                    "FROM information_schema.TABLES WHERE table_schema ='" + schema + "'");
             while (rs.next()) {
                 tableNames.add(rs.getString(1));
             }
@@ -89,7 +74,7 @@ public class SqlConnection implements Closeable {
 
     public List<MetaColumnInfo> getColumns(String database, String table) throws SQLException, ClassNotFoundException {
         List<MetaColumnInfo> columns = new ArrayList<>();
-        String columnSql = "SELECT * FROM " + database +"." + table + " WHERE 1 = 2";
+        String columnSql = "SELECT * FROM " + database + "." + table + " WHERE 1 = 2";
         PreparedStatement ps = null;
         ResultSet rs = null;
         ResultSetMetaData meta = null;
@@ -138,6 +123,7 @@ public class SqlConnection implements Closeable {
 //            }
 //        }
 //    }
+
     private List<String> getPrimaryKeys(/*Connection connection, */String table) throws SQLException {
         ResultSet rs = null;
         List<String> primaryKeys = new ArrayList<>();

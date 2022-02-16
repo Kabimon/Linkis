@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>linkis</artifactId>
@@ -9,52 +9,47 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>linkis-public-enhancements</artifactId>
+    <artifactId>linkis-metadatamanager-service-kingbase</artifactId>
 
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>linkis-bml</module>
-        <module>linkis-context-service</module>
-        <module>linkis-datasource/linkis-metadata</module>
-        <module>linkis-datasource/datasourcemanager/common</module>
-        <module>linkis-datasource/datasource-client</module>
-        <module>linkis-datasource/datasourcemanager/server</module>
-        <module>linkis-datasource/metadatamanager/common</module>
-        <module>linkis-datasource/metadatamanager/server</module>
-        <module>linkis-datasource/metadatamanager/service/elasticsearch</module>
-        <module>linkis-datasource/metadatamanager/service/mysql</module>
-        <module>linkis-datasource/metadatamanager/service/hive</module>
-        <module>linkis-datasource/metadatamanager/service/kafka</module>
-        <module>linkis-datasource/metadatamanager/service/dameng</module>
-        <module>linkis-datasource/metadatamanager/service/db2</module>
-        <module>linkis-datasource/metadatamanager/service/greenplum</module>
-        <module>linkis-datasource/metadatamanager/service/oracle</module>
-        <module>linkis-datasource/metadatamanager/service/postgre</module>
-        <module>linkis-datasource/metadatamanager/service/sqlserver</module>
-        <module>linkis-datasource/metadatamanager/service/kingbase</module>
-        <module>linkis-publicservice</module>
-    </modules>
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-metadata</artifactId>
+            <artifactId>linkis-metadatamanager-common</artifactId>
             <version>${linkis.version}</version>
         </dependency>
         <dependency>
             <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-bml</artifactId>
+            <artifactId>linkis-module</artifactId>
             <version>${linkis.version}</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>com.webank.wedatasphere.linkis</groupId>
-            <artifactId>linkis-publicservice</artifactId>
-            <version>${linkis.version}</version>
-            <type>pom</type>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>org.ow2.asm</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>mysql</groupId>
+                    <artifactId>mysql-connector-java</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.kingbase</groupId>
+            <artifactId>kingbase8</artifactId>
+            <version>8.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -86,7 +81,7 @@
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>distribution.xml</descriptor>
+                                <descriptor>src/main/assembly/distribution.xml</descriptor>
                             </descriptors>
                         </configuration>
                     </execution>
@@ -97,17 +92,16 @@
                     <appendAssemblyId>false</appendAssemblyId>
                     <attach>false</attach>
                     <descriptors>
-                        <descriptor>distribution.xml</descriptor>
+                        <descriptor>src/main/assembly/distribution.xml</descriptor>
                     </descriptors>
                 </configuration>
             </plugin>
         </plugins>
         <resources>
             <resource>
-                <directory>${basedir}/src/main/resources</directory>
+                <directory>src/main/resources</directory>
             </resource>
         </resources>
         <finalName>${project.artifactId}-${project.version}</finalName>
     </build>
-
 </project>

@@ -1,6 +1,6 @@
 package com.webank.wedatasphere.linkis.metadatamanager.service;
 
-import org.junit.Before;
+import com.webank.wedatasphere.linkis.metadatamanager.common.domain.MetaColumnInfo;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -9,23 +9,20 @@ import java.util.List;
 
 public class SqlConnectionTc {
 
-    private SqlConnection connection;
-
-    @Before
-    public void before() {
-        try {
-            connection = new SqlConnection("192.168.0.110", 5236, "TESTUSER", "test!0819", new HashMap<>());
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
+    @Test
+    public void test02() throws SQLException, ClassNotFoundException {
+        SqlConnection connection = new SqlConnection("192.168.0.17", 5236, "SYSDBA", "SYSDBA", "DMSERVER", new HashMap<>());
+        List<String> allTables = connection.getAllTables("GJTEST");
+        System.out.println(allTables);
     }
 
     @Test
-    public void test() throws SQLException {
-        List<String> allDatabases = connection.getAllDatabases();
-        System.out.println(allDatabases);
+    public void test03() throws SQLException, ClassNotFoundException {
+        SqlConnection connection = new SqlConnection("192.168.0.17", 5236, "SYSDBA", "SYSDBA", "DMSERVER", new HashMap<>());
+        List<MetaColumnInfo> allColumns = connection.getColumns("GJTEST", "TBL_USER");
+        for (MetaColumnInfo column : allColumns) {
+            System.out.println(column.getIndex() + "\t" + column.getName() + "\t" + column.getType());
+        }
     }
 
 }
